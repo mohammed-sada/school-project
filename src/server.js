@@ -35,8 +35,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('sendLocation', (coords, callback) => {
-        const message = `https://google.com/maps?q=${coords.latitude},${coords.longitude}`;
-        io.emit('message', message);
+        const url = `https://google.com/maps?q=${coords.latitude},${coords.longitude}`;
+        io.emit('locationMessage', url);
         callback('Location shared!');
     });
 });
