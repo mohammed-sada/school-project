@@ -4,6 +4,10 @@ const express = require('express');
 const socketIo = require('socket.io');
 const Filter = require('bad-words');
 
+const {
+    generateMessage,
+    generateLocationMessage } = require('./utils/messages');
+
 require('dotenv').config();
 
 const app = express();
@@ -17,27 +21,28 @@ app.use('/', express.static('index.html'));
 io.on('connection', (socket) => {
     console.log('new connection from:', socket.id);
 
-    socket.emit('message', 'Welcome!');
+    socket.emit('message', generateMessage('Welcome!'));
 
-    socket.broadcast.emit('message', 'A new user has joined!');
+    socket.broadcast.emit('message', generateMessage('A new user has joined!'));
 
-    socket.on('disconnect', () => {
-        io.emit('message', 'A user has left!');
-    });
 
     socket.on('sendMessage', (message, callback) => {
         const filter = new Filter;
         if (filter.isProfane(message)) {
             return callback('Profanify is not allowed!'); // Acknowledgment
         }
-        io.emit('message', message);
+        io.emit('message', generateMessage(message));
         callback();
     });
 
     socket.on('sendLocation', (coords, callback) => {
         const url = `https://google.com/maps?q=${coords.latitude},${coords.longitude}`;
-        io.emit('locationMessage', url);
+        io.emit('locationMessage', generateLocationMessage(url));
         callback('Location shared!');
+    });
+
+    socket.on('disconnect', () => {
+        io.emit('message', generateMessage('A user has left!'));
     });
 });
 
