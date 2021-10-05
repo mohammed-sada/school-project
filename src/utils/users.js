@@ -13,7 +13,7 @@ function addUser({ id, username, room }) {
     }
 
     // Validate username
-    const existingUsername = users.find(user => user.room === room && user.id === id);
+    const existingUsername = users.find(user => user.room === room && user.username === username);
     if (existingUsername) {
         return {
             error: 'Username is in use!'
@@ -22,7 +22,7 @@ function addUser({ id, username, room }) {
 
     const user = { id, username, room };
     users.push(user);
-    return user;
+    return { user };
 }
 
 function removeUser(id) {
