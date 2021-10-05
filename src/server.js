@@ -20,8 +20,9 @@ app.use('/', express.static('index.html'));
 io.on('connection', (socket) => {
     console.log('new connection from:', socket.id);
 
-    socket.on('join', ({ username, room }, callback) => {
-        const { user, error } = addUser({ id: socket.id, username, room });
+    socket.on('join', (options, callback) => {
+        const { user, error } = addUser({ id: socket.id, ...options });
+        const roomUsers = getRoomUsers(user.room);
 
         if (error) {
             return callback(error);
@@ -29,8 +30,9 @@ io.on('connection', (socket) => {
 
         socket.join(user.room);
 
-        socket.emit('message', generateMessage('Welcome!', 'Chat App'));
+        socket.emit('message', generateMessage('Welcome!', 'Chat App'), roomUsers);
         socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!`, '👋 =>'));
+        io.to(user.room).emit('listData', { room: user.room, roomUsers });
         callback();
     });
 
@@ -56,9 +58,11 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
+        const roomUsers = getRoomUsers(user.room);
 
         if (user.username) {
             io.to(user.room).emit('message', generateMessage(`${user.username} has left!`, '😢 =>'));
+            io.to(user.room).emit('listData', { room: user.room, roomUsers });
         }
     });
 });
