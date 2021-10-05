@@ -31,9 +31,14 @@ socket.on('locationMessage', message => {
 
 $messageForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    $messageFormButton.setAttribute('disabled', 'true');
 
     const message = e.target.elements.message.value;
+    if (message === '') {
+        return;
+    }
+
+    $messageFormButton.setAttribute('disabled', 'true');
+
 
     socket.emit('sendMessage', message, (error) => {
         $messageFormButton.removeAttribute('disabled');
