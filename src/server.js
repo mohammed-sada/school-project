@@ -21,17 +21,19 @@ app.use('/', express.static('index.html'));
 io.on('connection', (socket) => {
     console.log('new connection from:', socket.id);
 
-    socket.emit('message', generateMessage('Welcome!'));
+    socket.on('join', ({ username, room }) => {
+        socket.join(room);
 
-    socket.broadcast.emit('message', generateMessage('A new user has joined!'));
-
+        socket.emit('message', generateMessage('Welcome!'));
+        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`));
+    });
 
     socket.on('sendMessage', (message, callback) => {
         const filter = new Filter;
         if (filter.isProfane(message)) {
             return callback('Profanify is not allowed!'); // Acknowledgment
         }
-        io.emit('message', generateMessage(message));
+        io.to('rooma').emit('message', generateMessage(message));
         callback();
     });
 
