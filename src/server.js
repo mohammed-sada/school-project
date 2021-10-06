@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
 
         socket.join(user.room);
 
-        socket.emit('message', generateMessage('Welcome!', 'Chat App'), roomUsers);
+        socket.emit('message', generateMessage('Welcome!', 'Chat App'));
         socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!`, '👋 =>'));
         io.to(user.room).emit('listData', { room: user.room, roomUsers: getRoomUsers(user.room) });
         callback();
