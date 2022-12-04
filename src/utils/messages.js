@@ -1,7 +1,12 @@
+const { encrypt } = require("./hill");
+
 function generateMessage(text, username) {
+    const cipher = encrypt(text);
+
     return {
         username,
         text,
+        cipher,
         createdAt: new Date().getTime()
     };
 }

@@ -29,9 +29,10 @@ io.on('connection', (socket) => {
 
         socket.join(user.room);
 
-        socket.emit('message', generateMessage('Welcome!', 'Chat App'));
-        socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!`, '👋 =>'));
-        io.to(user.room).emit('listData', { room: user.room, roomUsers: getRoomUsers(user.room) });
+        // socket is specific for the current user - io is general
+        socket.emit('message', generateMessage('Welcome!', 'Chat App')); // only for the current user who has just joined
+        socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined!`, '👋 =>')); // for everyone
+        io.to(user.room).emit('listData', { room: user.room, roomUsers: getRoomUsers(user.room) }); // re-list the room's users as there is a new user that we have to notify ohters about
         callback();
     });
 
