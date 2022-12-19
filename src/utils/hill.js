@@ -1,3 +1,5 @@
+const hill = {};
+
 function getDeterminent(matrix) {
     let x = matrix[0][0] * ((matrix[1][1] * matrix[2][2]) - (matrix[2][1] * matrix[1][2]));
     let y = matrix[0][1] * ((matrix[1][0] * matrix[2][2]) - (matrix[2][0] * matrix[1][2]));
@@ -99,6 +101,7 @@ function getRidOfNeg(x, n) {
     return x;
 }
 
+
 let n = 26;
 let alphbetics = "abcdefghijklmnopqrstuvwxyz";
 let key = [
@@ -107,7 +110,7 @@ let key = [
     [2, 2, 19]
 ];
 
-let det;
+let det = -939;
 
 function checkRelativelyPrime() {
 
@@ -124,7 +127,8 @@ function checkRelativelyPrime() {
     }
 }
 
-function encrypt(plain) {
+
+hill.encrypt = function (plain) {
     let cipher = "";
     if (alphbetics.indexOf(" ") == -1) {
         plain = plain.split(" ").join("");
@@ -156,26 +160,30 @@ function encrypt(plain) {
         }
     }
     return cipher;
-}
+};
 
-function decrypt(cipher) {
+hill.decrypt = function (cipher) {
+    // det = parseInt(getDeterminent(key));
+    // console.log("det = " + det);
+
     let plain = "";
     let m = det;
+
     if (det < 0) {
         m = getRidOfNeg(det, n);
     }
     m = m % n;
 
-    console.log("n: " + n);
+    // console.log("n: " + n);
 
-    console.log("m:  " + m);
+    // console.log("m:  " + m);
 
 
     let modularInv = modularInverse(m, n);
 
     let matrixInv = inverseMatrix(key);
 
-    console.log(modularInv);
+    // console.log(modularInv);
 
 
     for (let index = 0; index < cipher.length; index += 3) {
@@ -183,12 +191,12 @@ function decrypt(cipher) {
         let y = alphbetics.indexOf(cipher[index + 1]);
         let z = alphbetics.indexOf(cipher[index + 2]);
 
-        console.log("dec: " + [x, y, z]);
+        // console.log("dec: " + [x, y, z]);
 
 
         let res = multiplyMatrix(matrixInv, [x, y, z]);
 
-        console.log("matinv: " + res);
+        // console.log("matinv: " + res);
 
 
 
@@ -196,7 +204,7 @@ function decrypt(cipher) {
             res[i] *= modularInv;
 
 
-            console.log("res[" + i + "]:  " + res[i]);
+            // console.log("res[" + i + "]:  " + res[i]);
 
             if (res[i] < 0) {
                 res[i] = getRidOfNeg(res[i], n);
@@ -211,9 +219,6 @@ function decrypt(cipher) {
 
     }
     return plain;
-}
-
-module.exports = {
-    encrypt,
-    decrypt
 };
+
+module.exports = hill;

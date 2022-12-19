@@ -1,9 +1,11 @@
-const { encrypt } = require("./hill");
+const hill = require("./hill");
+const helpers = require('./helpers');
 
 function generateMessage(text, username) {
-    const cipher = encrypt(text);
+    const cipher = hill.encrypt(text);
 
     return {
+        id: helpers.createRandomString(20),
         username,
         text,
         cipher,

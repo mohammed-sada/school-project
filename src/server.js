@@ -2,10 +2,14 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketIo = require('socket.io');
+const cors = require('cors');
+
 const Filter = require('bad-words');
+const handlers = require("./handlers");
 
 const { generateMessage, generateLocationMessage } = require('./utils/messages');
 const { addUser, getUser, removeUser, getRoomUsers } = require('./utils/users');
+const _data = require('./utils/data');
 
 require('dotenv').config();
 
@@ -13,9 +17,17 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/', express.static('index.html'));
 
+app.get('/messages', handlers.httpGetMessages);
+app.get('/message', handlers.httpGetMessage);
+
+// const messages = [];
+// handlers.httpGetMessages(function (message) {
+//     messages.push(message);
+// });
 
 io.on('connection', (socket) => {
     console.log('new connection from:', socket.id);
@@ -38,14 +50,29 @@ io.on('connection', (socket) => {
 
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
-
         const filter = new Filter;
         if (filter.isProfane(message)) {
             return callback('Profanify is not allowed!'); // Acknowledgment
         }
 
-        io.to(user.room).emit('message', generateMessage(message, user.username));
-        callback();
+        message = typeof (message) == 'string' && message.trim().length > 0 ? message : false;
+        if (message) {
+            // Create the message object
+            const messageObject = generateMessage(message, user.username);
+
+            const messageObjectToStore = { ...messageObject };
+            delete messageObjectToStore.text;
+
+            // Store the message
+            _data.create('messages', messageObject.id, messageObjectToStore, function (err) {
+                if (!err) {
+                    io.to(user.room).emit('message', messageObject);
+                    callback();
+                } else callback('Could not store the message');
+
+            });
+
+        } else callback('Missing required fields');
     });
 
     socket.on('sendLocation', (coords, callback) => {
@@ -67,5 +94,5 @@ io.on('connection', (socket) => {
 });
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, console.log(`listetning on port ${PORT}`));
