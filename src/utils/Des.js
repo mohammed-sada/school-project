@@ -1,5 +1,5 @@
 const des = {};
-function encrypt(message) {
+des.encrypt = function encrypt(message) {
     //1- key generation steps:
     let keyword = "password";
     var Extendedkey = new Array(keyword.length);
@@ -303,6 +303,25 @@ function encrypt(message) {
     for (let i = 0; i < 8; i++) {
         charsarray[i]=String.fromCharCode(parseInt(splitfinalarray[i],2));
     }
-   return charsarray;
+    // store encrypted data in var encrypted
+    var encrypted = charsarray.join("");
+ //    console.log(encrypted);
+   return encrypted;
 }
+console.log(des.encrypt("ahmed"));
+// decrypt function : take encrypted message as string and return decrypted message as string
+des.decrypt = function decrypt(encryptedMessage) {
+    
+  
+return result;
+};
+
+const encryptedMessage = des.encrypt("Hello World");
+console.log(encryptedMessage[1]);
+console.log(des.decrypt(encryptedMessage));
+
+
+
+
+
 module.exports = des;
