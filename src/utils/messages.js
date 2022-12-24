@@ -5,7 +5,7 @@ const helpers = require('./helpers');
 
 function generateMessage(text, username) {
     //const cipher = hill.encrypt(text);
-    const cipher = Des.encrypt(text);
+    const cipher = Des.encrypt(text); // TODO: change to hill / des
 
     return {
         id: helpers.createRandomString(20),
