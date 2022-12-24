@@ -303,6 +303,6 @@ function encrypt(message) {
     for (let i = 0; i < 8; i++) {
         charsarray[i]=String.fromCharCode(parseInt(splitfinalarray[i],2));
     }
-   cipher.value= charsarray.join("");
+   return charsarray;
 }
 module.exports = des;
