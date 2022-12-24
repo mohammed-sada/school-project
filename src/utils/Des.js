@@ -1,3 +1,4 @@
+const des = {};
 function encrypt(message) {
     //1- key generation steps:
     let keyword = "password";
@@ -304,3 +305,4 @@ function encrypt(message) {
     }
    cipher.value= charsarray.join("");
 }
+module.exports = des;
