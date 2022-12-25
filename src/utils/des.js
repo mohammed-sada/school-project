@@ -349,14 +349,14 @@ des.encrypt = function (message) {
 
   if (message.length >= 8) {
     let temp = divideMessage(message);
-    console.log(temp);
+    // console.log(temp);
     for (let i = 0; i < temp.length; i++) {
       if (temp[i].length < 8) {
         let ms = temp[i];
         ms = ms.padEnd(8, " ");
-        console.log("ms : " + ms);
+        // console.log("ms : " + ms);
         encrypted += encrypt(stringToHex(ms), rkb, rk);
-        console.log("encrypted : " + encrypted);
+        // console.log("encrypted : " + encrypted);
       }
       if (temp[i].length == 8)
         encrypted += encrypt(stringToHex(temp[i]), rkb, rk);
@@ -370,18 +370,18 @@ des.encrypt = function (message) {
 };
 
 des.decrypt = function (cipher) {
-  let de = divideMessage16(cipher,cipher.length / 16);
+  let de = divideMessage16(cipher, cipher.length / 16);
   // console.log("cipher : " + cipher);
   for (let i = 0; i < de.length; i++) {
     //console.log("de[i] : " + de[i]);
     de[i] = encrypt(de[i], rkbRev, rkRev);
   }
   let decrypted = de.join("");
-  console.log("decrypted hex : " + decrypted);
+  // console.log("decrypted hex : " + decrypted);
   return hexToString(decrypted);
 };
 //console.log(des.encrypt("ahmedizzmurtaas"));
-console.log(des.decrypt(des.encrypt("ahmed izz murtaja")));
+// console.log(des.decrypt(des.encrypt("ahmed izz murtaja")));
 //console.log(des.decrypt(des.encrypt("ahmed iz")));
 //console.log(des.decrypt(des.encrypt("ahmedizzmurtaas")));
 // console.log(divideMessage("ahmedizzmurtja"));
