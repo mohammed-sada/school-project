@@ -2,21 +2,31 @@ const des = {};
 
 let local = "";
 function stringToHex(str) {
-  var hex = '';
-  for(var i = 0; i < str.length; i++) {
+  var hex = "";
+  for (var i = 0; i < str.length; i++) {
     hex += str.charCodeAt(i).toString(16);
   }
   return hex;
 }
+function divideMessage(message) {
+  const messageLength = message.length;
+  const numChunks = Math.ceil(messageLength / 8);
+  const chunks = [];
+
+  for (let i = 0; i < numChunks; i++) {
+    chunks.push(message.substr(i * 8, 8));
+  }
+
+  return chunks;
+}
 
 // hex to string
 function hexToString(hex) {
-  var str = '';
-  for(var i = 0; i < hex.length; i += 2) {
+  var str = "";
+  for (var i = 0; i < hex.length; i += 2) {
     str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
   }
   return str;
-
 }
 
 function hex2bin(s) {
@@ -57,14 +67,14 @@ function bin2hex(s) {
     "0101": "5",
     "0110": "6",
     "0111": "7",
-    "1000": "8",
-    "1001": "9",
-    "1010": "A",
-    "1011": "B",
-    "1100": "C",
-    "1101": "D",
-    "1110": "E",
-    "1111": "F",
+    1000: "8",
+    1001: "9",
+    1010: "A",
+    1011: "B",
+    1100: "C",
+    1101: "D",
+    1110: "E",
+    1111: "F",
   };
 
   let hex = "";
@@ -112,7 +122,6 @@ function xor_(a, b) {
   return ans;
 }
 
-
 function encrypt(pt, rkb, rk) {
   // Hexadecimal to binary
   pt = hex2bin(pt);
@@ -132,7 +141,7 @@ function encrypt(pt, rkb, rk) {
   // Splitting Permuted Text into L[0] and R[0]
   // Splitting Permuted Text into L[0] and R[0]
   let l = pt.substr(0, 32);
-  let r = pt.substr(32, 32);
+  let r = pt.substr(32, 64);
   const exp_d = [
     32, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 14, 15,
     16, 17, 16, 17, 18, 19, 20, 21, 20, 21, 22, 23, 24, 25, 24, 25, 26, 27, 28,
@@ -246,20 +255,16 @@ function encrypt(pt, rkb, rk) {
     if (i !== 15) {
       [l, r] = [r, l];
     }
-    console.log(`Round ${i + 1} ${bin2hex(l)} ${bin2hex(r)} ${rk[i]}`);
+    // console.log(`Round ${i + 1} ${bin2hex(l)} ${bin2hex(r)} ${rk[i]}`);
   }
 
   // Combination
   let combine = l + r;
 
- 
-
   // Final Permutation
   let cipher = bin2hex(permute(combine, final_perm, 64));
   return cipher;
 }
-
-
 
 const message = "123456ABCD132536";
 
@@ -305,15 +310,45 @@ const rkRev = rk.slice().reverse();
 
 //console.log(hex2bin("61686d6564"));
 des.encrypt = function (message) {
-let encrypted = encrypt(stringToHex(message), rkb, rk);
-//console.log(encrypt(encrypted, rkbRev, rkRev));
-return encrypted;
-}
+  let encrypted = "";
+  // append message to 8 characters if < 8
+  if (message.length < 8) {
+    message = message.padEnd(8, " ");
+    encrypted += encrypt(stringToHex(message), rkb, rk);
+  }
+
+  //console.log(encrypt(encrypted, rkbRev, rkRev));
+
+  if (message.length >= 8) {
+    let temp = divideMessage(message);
+    for (let i = 0; i < temp.length; i++) {
+      if (temp[i].length < 8) {
+        temp[i] = temp[i].padEnd(8, " ");
+        encrypted += encrypt(stringToHex(temp[i]), rkb, rk);
+      }
+      if (temp[i].length == 8)
+        encrypted += encrypt(stringToHex(temp[i]), rkb, rk);
+    }
+  }
+
+  // if (message.length == 8)
+  // encrypted.concat(encrypt(stringToHex(message), rkb, rk));
+
+  return encrypted;
+};
 
 des.decrypt = function (cipher) {
-let decrypted = encrypt(cipher, rkbRev, rkRev);
-return hexToString(decrypted);
-}
-console.log(des.encrypt("ahmedizz"));
-console.log(des.decrypt(des.encrypt("ahmedizz")));
+  console.log("cipher : " + cipher);
+  let decrypted = encrypt(cipher, rkbRev, rkRev);
+  console.log("decrypted hex : " + decrypted);
+  return hexToString(decrypted);
+};
+//console.log(des.encrypt("ahmedizzmurtaas"));
+console.log(des.decrypt(des.encrypt("ahmed")));
+//console.log(des.decrypt(des.encrypt("ahmedizzmurtaas")));
+// console.log(divideMessage("ahmedizzmurtja"));
+// let t = divideMessage("ahmedizzmurtja");
+// console.log(des.encrypt(t[1]));
+// console.log(des.decrypt(des.encrypt(t[1])));
+// console.log(t[1]);
 module.exports = des;
