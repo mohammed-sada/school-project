@@ -1,5 +1,6 @@
 const _data = require('./utils/data');
 const hill = require("./utils/hill");
+const des = require("./utils/des");
 
 const handlers = {};
 
@@ -24,7 +25,7 @@ handlers.httpGetMessage = function (req, res) {
         // Lookup the check
         _data.read('messages', id, function (err, messageData) {
             if (!err && messageData) {
-                messageData.text = hill.decrypt(messageData.cipher);
+                messageData.text = messageData.cipherType == "hill" ? hill.decrypt(messageData.cipher) : des.decrypt(messageData.cipher);
                 return res.json(messageData);
             } else {
                 callback(404);

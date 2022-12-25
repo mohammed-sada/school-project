@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
         callback();
     });
 
-    socket.on('sendMessage', (message, callback) => {
+    socket.on('sendMessage', ({ message, cipherType }, callback) => {
         const user = getUser(socket.id);
         const filter = new Filter;
         if (filter.isProfane(message)) {
@@ -58,7 +58,7 @@ io.on('connection', (socket) => {
         message = typeof (message) == 'string' && message.trim().length > 0 ? message : false;
         if (message) {
             // Create the message object
-            const messageObject = generateMessage(message, user.username);
+            const messageObject = generateMessage(message, user.username, cipherType);
 
             const messageObjectToStore = { ...messageObject };
             delete messageObjectToStore.text;
