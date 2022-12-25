@@ -19,6 +19,34 @@ function divideMessage(message) {
 
   return chunks;
 }
+function divideMessage16(message, numParts) {
+  // Validate input
+  if (typeof message !== 'string') {
+    throw new Error('message must be a string');
+  }
+  if (typeof numParts !== 'number' || numParts <= 0) {
+    throw new Error('numParts must be a positive number');
+  }
+
+  // Initialize variables
+  const parts = [];
+  let startIndex = 0;
+  let endIndex = 16;
+
+  // Divide the message into parts
+  while (startIndex < message.length) {
+    // Get the current part of the message
+    const part = message.substring(startIndex, endIndex);
+    // Add the part to the array
+    parts.push(part);
+    // Update the start and end indices for the next iteration
+    startIndex += 16;
+    endIndex += 16;
+  }
+
+  return parts;
+}
+
 
 // hex to string
 function hexToString(hex) {
@@ -321,10 +349,14 @@ des.encrypt = function (message) {
 
   if (message.length >= 8) {
     let temp = divideMessage(message);
+    console.log(temp);
     for (let i = 0; i < temp.length; i++) {
       if (temp[i].length < 8) {
-        temp[i] = temp[i].padEnd(8, " ");
-        encrypted += encrypt(stringToHex(temp[i]), rkb, rk);
+        let ms = temp[i];
+        ms = ms.padEnd(8, " ");
+        console.log("ms : " + ms);
+        encrypted += encrypt(stringToHex(ms), rkb, rk);
+        console.log("encrypted : " + encrypted);
       }
       if (temp[i].length == 8)
         encrypted += encrypt(stringToHex(temp[i]), rkb, rk);
@@ -338,13 +370,19 @@ des.encrypt = function (message) {
 };
 
 des.decrypt = function (cipher) {
-  console.log("cipher : " + cipher);
-  let decrypted = encrypt(cipher, rkbRev, rkRev);
+  let de = divideMessage16(cipher,cipher.length / 16);
+  // console.log("cipher : " + cipher);
+  for (let i = 0; i < de.length; i++) {
+    //console.log("de[i] : " + de[i]);
+    de[i] = encrypt(de[i], rkbRev, rkRev);
+  }
+  let decrypted = de.join("");
   console.log("decrypted hex : " + decrypted);
   return hexToString(decrypted);
 };
 //console.log(des.encrypt("ahmedizzmurtaas"));
-console.log(des.decrypt(des.encrypt("ahmed")));
+console.log(des.decrypt(des.encrypt("ahmed izz murtaja")));
+//console.log(des.decrypt(des.encrypt("ahmed iz")));
 //console.log(des.decrypt(des.encrypt("ahmedizzmurtaas")));
 // console.log(divideMessage("ahmedizzmurtja"));
 // let t = divideMessage("ahmedizzmurtja");
