@@ -1,11 +1,12 @@
 const hill = require("./hill");
-const hill = require("./Des");
+const hill = require("./DesEnc");
 
 const helpers = require('./helpers');
 
 function generateMessage(text, username) {
     //const cipher = hill.encrypt(text);
-    const cipher = des.encrypt(text); // TODO: change to hill / des
+    const cipher = des.encrypt(); // TODO: change to hill / des
+
 
     return {
         id: helpers.createRandomString(20),
