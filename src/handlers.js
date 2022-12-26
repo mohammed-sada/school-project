@@ -11,6 +11,7 @@ handlers.httpGetMessages = function (req, res) {
             return res.json(messages);
         } else {
             console.log('Error: Could not find any messages to process');
+            return res.json([]);
         }
     });
 };
